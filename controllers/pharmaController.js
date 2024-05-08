@@ -11,11 +11,13 @@ exports.getAllMedicines = async (req, res) => {
 
 exports.getMedicineById = async (req, res) => {
     try {
-        const medicine = await Pharma.findById(req.params.pharmaId);
-        if (!medicine) {
+        const targetMedicineId = req.params.patientId; 
+        // console.log(targetPatientId);
+        const filteredMedicine = await Patient.find({ patient_id: targetMedicineId });
+        if (!filteredMedicine) {
             return res.status(404).json({ error: 'Medicine not found' });
         }
-        res.json(medicine);
+        res.json(filteredMedicine);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
