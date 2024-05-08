@@ -8,7 +8,7 @@ require("dotenv").config();
 // routes 
 const patientRoutes = require("./routes/patientRoutes"); 
 const doctorRoutes = require("./routes/doctorRoutes");
-
+const pharmaRoutes = require("./routes/pharmaRoutes");
 
 
 
@@ -23,6 +23,7 @@ app.use(express.json());
 
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/patient", patientRoutes); 
+app.use("/api/pharma", pharmaRoutes);
 
 const port = process.env.PORT || 5000; 
 app.listen(port, () => { 
