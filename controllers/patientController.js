@@ -11,14 +11,17 @@ exports.getAllPatients = async (req, res) => {
 
 exports.getPatientById = async (req, res) => {
     try {
-        const patient = await Patient.findById(req.params.patientId);
-        if (!patient) {
+        const targetPatientId = req.params.patientId; 
+        // console.log(targetPatientId);
+        const filteredPatients = await Patient.find({ patient_id: targetPatientId });
+        if (!filteredPatients) {
             return res.status(404).json({ error: 'Patient not found' });
         }
-        res.json(patient);
+        res.json(filteredPatients); 
     } catch (err) {
         res.status(500).json({ error: err.message }); 
-    }
+    }    
+
 };
 
 exports.createPatient = async (req, res) => {
