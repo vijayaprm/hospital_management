@@ -87,14 +87,14 @@ exports.deleteDoctor = async (req, res) => {
 async function getHighestDoctorId() {
     const lastDoctor = await Doctor.findOne().sort({ doctor_id: -1 }); // Get the patient with the highest patient_id
     if (!lastDoctor) {
-        return null; // No patients exist yet
+        return null; 
     }
     return lastDoctor.doctor_id;
 }
 
 function generateNextDoctorId(highestDoctorId) {
     if (!highestDoctorId) {
-        return 'DOC1'; // First patient
+        return 'DOC1'; 
     }
     const numPart = parseInt(highestDoctorId.substring(3), 10); // Extract the numeric part
     const nextNum = numPart + 1;

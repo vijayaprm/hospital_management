@@ -92,14 +92,14 @@ exports.deleteAppointment = async (req, res) => {
 async function getHighestAppointId() {
     const lastAppoint = await Appointment.findOne().sort({ appointment_id: -1 }); // Get the patient with the highest patient_id
     if (!lastAppoint) {
-        return null; // No patients exist yet
+        return null; 
     }
     return lastAppoint.appointment_id;
 }
 
 function generateNextAppointId(highestAppointId) {
     if (!highestAppointId) {
-        return 'APP1'; // First patient
+        return 'APP1'; 
     }
     const numPart = parseInt(highestAppointId.substring(3), 10); // Extract the numeric part
     const nextNum = numPart + 1;

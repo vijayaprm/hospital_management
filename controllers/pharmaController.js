@@ -77,14 +77,14 @@ exports.deleteMedicine = async (req, res) => {
 async function getHighestPharmaId() {
     const lastPharma = await Pharma.findOne().sort({ pharma_id: -1 }); // Get the patient with the highest patient_id
     if (!lastPharma) {
-        return null; // No patients exist yet
+        return null; 
     }
     return lastPharma.pharma_id;
 }
 
 function generateNextPharmaId(highestPharmaId) {
     if (!highestPharmaId) {
-        return 'MED1'; // First patient
+        return 'MED1'; 
     }
     const numPart = parseInt(highestPharmaId.substring(3), 10); // Extract the numeric part
     const nextNum = numPart + 1;
