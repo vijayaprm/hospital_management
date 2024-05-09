@@ -26,6 +26,11 @@ exports.getPatientById = async (req, res) => {
 
 exports.createPatient = async (req, res) => {
     try {
+        const highestPatientId = await getHighestPatientId(); 
+        const nextId = generateNextPatientId(highestPatientId);
+
+        req.body.patient_id = nextId;
+
         const newPatient = new Patient(req.body);
         const savedPatient = await newPatient.save();
         res.status(201).json(savedPatient);
@@ -61,3 +66,23 @@ exports.deletePatient = async (req, res) => {
         res.status(500).json({ error: err.message }); 
     }
 };
+
+
+
+
+async function getHighestPatientId() {
+    const lastPatient = await Patient.findOne().sort({ patient_id: -1 }); // Get the patient with the highest patient_id
+    if (!lastPatient) {
+        return null; // No patients exist yet
+    }
+    return lastPatient.patient_id;
+}
+
+function generateNextPatientId(highestPatientId) {
+    if (!highestPatientId) {
+        return 'PAT1'; // First patient
+    }
+    const numPart = parseInt(highestPatientId.substring(3), 10); // Extract the numeric part
+    const nextNum = numPart + 1;
+    return 'PAT' + nextNum.toString();
+}

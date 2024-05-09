@@ -11,9 +11,9 @@ exports.getAllMedicines = async (req, res) => {
 
 exports.getMedicineById = async (req, res) => {
     try {
-        const targetMedicineId = req.params.patientId; 
+        const targetMedicineId = req.params.pharma_id; 
         // console.log(targetPatientId);
-        const filteredMedicine = await Patient.find({ patient_id: targetMedicineId });
+        const filteredMedicine = await Pharma.find({ pharma_id: targetMedicineId });
         if (!filteredMedicine) {
             return res.status(404).json({ error: 'Medicine not found' });
         }
@@ -25,6 +25,10 @@ exports.getMedicineById = async (req, res) => {
 
 exports.createMedicine = async (req, res) => {
     try {
+        const highestPharmaId = await getHighestPharmaId(); 
+        const nextId = generateNextPharmaId(highestPharmaId);
+
+        req.body.pharma_id = nextId;
         const newMedicine = new Pharma(req.body);
         const savedMedicine = await newMedicine.save();
         res.status(201).json(savedMedicine);
@@ -69,3 +73,20 @@ exports.deleteMedicine = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+async function getHighestPharmaId() {
+    const lastPharma = await Pharma.findOne().sort({ pharma_id: -1 }); // Get the patient with the highest patient_id
+    if (!lastPharma) {
+        return null; // No patients exist yet
+    }
+    return lastPharma.pharma_id;
+}
+
+function generateNextPharmaId(highestPharmaId) {
+    if (!highestPharmaId) {
+        return 'MED1'; // First patient
+    }
+    const numPart = parseInt(highestPharmaId.substring(3), 10); // Extract the numeric part
+    const nextNum = numPart + 1;
+    return 'MED' + nextNum.toString();
+}

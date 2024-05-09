@@ -14,17 +14,21 @@ exports.createAppointment = async (req, res) => {
         if (!patientExists) {
             return res.status(400).json({ error: 'Patient not found. Create new patient' }); 
         }
-        
+
         const existingAppointment = await Appointment.findOne({ 
             doctor_id,
             date,
-            time 
+            time,
+            status: { $ne: 'Cancel' }
         });
 
         if (existingAppointment) {
             return res.status(400).json({ error: 'Appointment slot already taken' });
         }
+        const highestAppointId = await getHighestAppointId(); 
+        const nextId = generateNextAppointId(highestAppointId);
 
+        req.body.appointment_id = nextId;
         const newAppointment = new Appointment(req.body);
         const savedAppointment = await newAppointment.save();
         res.status(201).json(savedAppointment);
@@ -84,3 +88,20 @@ exports.deleteAppointment = async (req, res) => {
         res.status(500).json({ error: err.message }); 
     }
 };
+
+async function getHighestAppointId() {
+    const lastAppoint = await Appointment.findOne().sort({ appointment_id: -1 }); // Get the patient with the highest patient_id
+    if (!lastAppoint) {
+        return null; // No patients exist yet
+    }
+    return lastAppoint.appointment_id;
+}
+
+function generateNextAppointId(highestAppointId) {
+    if (!highestAppointId) {
+        return 'APP1'; // First patient
+    }
+    const numPart = parseInt(highestAppointId.substring(3), 10); // Extract the numeric part
+    const nextNum = numPart + 1;
+    return 'APP' + nextNum.toString();
+}
