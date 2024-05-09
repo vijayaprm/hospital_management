@@ -24,7 +24,6 @@ exports.createAppointment = async (req, res) => {
 
 exports.getAllAppointments = async (req, res) => {
     try {
-        // Add Filtering: You could add query parameters to filter by doctor_id, patient_id, date ranges, etc.
         const appointments = await Appointment.find();
         res.json(appointments);
     } catch (err) {
@@ -34,11 +33,14 @@ exports.getAllAppointments = async (req, res) => {
 
 exports.getAppointmentById = async (req, res) => {
     try {
-        const appointment = await Appointment.findById(req.params.appointmentId);
-        if (!appointment) {
+        const targetAppointmentId = req.params.appointmentId; 
+        // console.log(targetPatientId);
+        const filteredAppointment = await Appointment.find({ appointment_id: targetAppointmentId });
+        
+        if (!filteredAppointment) {
             return res.status(404).json({ error: 'Appointment not found' }); 
         }
-        res.json(appointment);
+        res.json(filteredAppointment);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

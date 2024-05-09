@@ -9,8 +9,8 @@ require("dotenv").config();
 const patientRoutes = require("./routes/patientRoutes"); 
 const doctorRoutes = require("./routes/doctorRoutes");
 const pharmaRoutes = require("./routes/pharmaRoutes");
-
-
+const appoinRoutes = require("./routes/appoinRoutes");
+const recordRoutes = require("./routes/recordRoutes");
 
 const mongoUrl = process.env.MONGODB_URL; 
 mongoose.connect(mongoUrl)
@@ -24,6 +24,8 @@ app.use(express.json());
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/patient", patientRoutes); 
 app.use("/api/pharma", pharmaRoutes);
+app.use("/api/appointment", appoinRoutes); 
+app.use("/api/record", recordRoutes);
 
 const port = process.env.PORT || 5000; 
 app.listen(port, () => { 
