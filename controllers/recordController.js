@@ -1,4 +1,6 @@
 const Record = require('../models/record');
+const Doctor = require('../models/doctor');
+const Patient = require('../models/patient');
 
 exports.getAllRecords = async (req, res) => {
     try {
@@ -24,6 +26,26 @@ exports.getRecordById = async (req, res) => {
 
 exports.createRecord = async (req, res) => {
     try {
+        const { doctor_id, patient_id,date } = req.body;
+
+        const doctorExists = await Doctor.exists({ doctor_id: doctor_id }); 
+        if (!doctorExists) {
+            return res.status(400).json({ error: 'Doctor invalid. Create new doctor or use valid ID' });
+        }
+
+        const patientExists = await Patient.exists({ patient_id: patient_id }); 
+        if (!patientExists) {
+            return res.status(400).json({ error: 'Patient invalid . Create new patient or use valid ID' }); 
+        }
+        const existingRecord = await Doctor.findOne({ 
+            doctor_id,
+            patient_id,
+            date 
+        });
+
+        if (existingRecord) {
+            return res.status(400).json({ error: 'Record already exists for this doctor and patient on this date' });
+        }
         const newRecord = new Record(req.body);
         const savedRecord = await newRecord.save();
         res.status(201).json(savedRecord);

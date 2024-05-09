@@ -1,9 +1,20 @@
 const Appointment = require('../models/appointment');
-
+const Doctor = require('../models/doctor');
+const Patient = require('../models/patient');
 exports.createAppointment = async (req, res) => {
     try {
-        const { doctor_id, date, time } = req.body;
+        const { doctor_id, patient_id, date, time } = req.body;
 
+        const doctorExists = await Doctor.exists({ doctor_id: doctor_id }); 
+        if (!doctorExists) {
+            return res.status(400).json({ error: 'Doctor not found. Create new doctor' });
+        }
+
+        const patientExists = await Patient.exists({ patient_id: patient_id }); 
+        if (!patientExists) {
+            return res.status(400).json({ error: 'Patient not found. Create new patient' }); 
+        }
+        
         const existingAppointment = await Appointment.findOne({ 
             doctor_id,
             date,
